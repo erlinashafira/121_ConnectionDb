@@ -1,7 +1,9 @@
 import express from 'express'
 import pg from 'pg'
+import 'dotenv/config'
+
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 const { Pool } = pg
 
 app.use(express.json())
@@ -10,12 +12,13 @@ app.use(
         extended: true,
     })
 )
+
 const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'mahasiswa',
-    password: '',
-    port: 5432,
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_NAME,
+    password: process.env.DB_PASSWORD,
+    port: process.env.DB_PORT,
 })
 
 app.get('/', (req, res, next) => {
@@ -23,6 +26,7 @@ app.get('/', (req, res, next) => {
     pool.query('Select * from biodata')
         .then(testData => {
             console.log(testData);
+            res.send('Data berhasil diambil, cek console terminal!'); 
         })
         .catch(err => {
             console.error(err);
@@ -31,5 +35,6 @@ app.get('/', (req, res, next) => {
 })
 
 app.listen(port, () => {
-    console.log('App running on port ${port}.')
+    // Menggunakan backtick (``) agar ${port} dinamis
+    console.log(`App running on port ${port}.`)
 })
